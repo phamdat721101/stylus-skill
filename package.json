@@ -4,5 +4,8 @@
   "workspaces": [
     "packages/mcp-server",
     "packages/dashboard"
-  ]
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/mcp-server && npm run build -w packages/dashboard"
+  }
 }
