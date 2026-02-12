@@ -7,9 +7,10 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./tools/*": "./dist/tools/*.js",
-    "./types": "./dist/types.js",
-    "./utils/*": "./dist/utils/*.js"
+    "./tools/ink-auditor": "./dist/tools/ink-auditor.js",
+    "./tools/motsu-generator": "./dist/tools/motsu-generator.js",
+    "./tools/agent-manifest": "./dist/tools/agent-manifest.js",
+    "./types": "./dist/types.js"
   },
   "scripts": {
     "build": "tsc",
