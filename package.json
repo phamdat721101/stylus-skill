@@ -1,0 +1,8 @@
+{
+  "name": "stylus-skill",
+  "private": true,
+  "workspaces": [
+    "packages/mcp-server",
+    "packages/dashboard"
+  ]
+}

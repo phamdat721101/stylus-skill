@@ -1,0 +1,124 @@
+# Arbitrum Stylus Builder Skill - Detailed Usage Guide
+
+This guide provides a comprehensive overview of the **Stylus Builder Skill**, a toolset designed to accelerate the development of Arbitrum Stylus smart contracts and Web3 applications. It follows an "Actionable Skills" philosophy, providing one-shot scripts and AI-integrated tools.
+
+## 1. Overview
+
+The Stylus Builder Skill consists of three main components:
+1.  **Shell Scripts (`scripts/`)**: For environment setup, project scaffolding, validation, and deployment.
+2.  **MCP Server (`packages/mcp-server`)**: An AI agent interface for generating tests (`motsu`) and auditing code (`ink-auditor`).
+3.  **Dashboard (`packages/dashboard`)**: A Next.js web interface template for interacting with your contracts.
+
+## 2. Prerequisites & Setup
+
+Before starting, ensure you have the necessary environment. The `setup.sh` script automates this.
+
+### Automated Setup
+Run the setup script to install Rust, the `wasm32-unknown-unknown` target, and `cargo-stylus`.
+
+```bash
+./scripts/setup.sh
+```
+
+**What this does:**
+- Checks for `cargo` (Rust package manager). Installs `rustup` if missing.
+- Adds the `wasm32-unknown-unknown` compilation target (required for Stylus WASM contracts).
+- Installs `cargo-stylus`, the official CLI tool for Arbitrum Stylus.
+
+## 3. Workflow: Building a Stylus Contract
+
+### Step 1: Scaffold a New Project
+Use the `scaffold.sh` script to create a new, optimized Stylus project.
+
+```bash
+./scripts/scaffold.sh <project_name>
+# Example:
+./scripts/scaffold.sh my_defi_protocol
+```
+
+**Generated Structure:**
+- `Cargo.toml`: Pre-configured with `stylus-sdk`, `alloy-primitives`, and `mini-alloc`. Includes release profile optimizations (`lto = true`, `opt-level = "s"`) to minimize WASM size.
+- `src/lib.rs`: Contains a basic `Counter` contract example using the `sol_storage!` macro.
+- `Stylus.toml`: Configuration for the Stylus program.
+- `.cargo/config.toml`: Sets the default build target to WASM.
+
+### Step 2: Develop & Verify
+Write your Rust code in `src/lib.rs`. To verify that your contract compiles correctly to WASM and meets Stylus constraints:
+
+```bash
+./scripts/check.sh [project_path]
+# Example (from root):
+./scripts/check.sh my_defi_protocol
+```
+
+**Constraints to remember:**
+- No `std` I/O or threading.
+- Use `mini-alloc` for efficient memory management in WASM.
+
+### Step 3: Deploy
+Deploy your contract to an Arbitrum chain (default: Sepolia Testnet). You need a private key with some ETH for gas.
+
+```bash
+./scripts/deploy.sh <private_key> [rpc_endpoint]
+```
+
+- **Private Key**: Your wallet's private key (starts with `0x` or without).
+- **RPC Endpoint**: Defaults to `https://sepolia-rollup.arbitrum.io/rpc` if not provided.
+
+## 4. Accelerating Development with AI (MCP)
+
+This repository includes a **Model Context Protocol (MCP)** server (`stylus-architect`) that exposes four AI-integrated tools. Connect it to Claude Desktop, Cursor, Claude Code CLI, or any MCP-compatible client.
+
+### Tools Summary
+
+| Tool | Purpose |
+|---|---|
+| `scaffold_stylus_project` | Create a new Stylus project from the Counter template |
+| `analyze_ink_usage` | Audit Rust code for gas-expensive Ink patterns (7 rules, 3 severity levels) |
+| `generate_motsu_tests` | Generate Motsu-framework unit tests (3 scenarios per function) |
+| `generate_agent_manifest` | Produce an ERC-8004 Agent Manifest JSON with Rust-to-Solidity type mapping |
+
+### Quick Start
+
+```bash
+npm install && npm run build -w packages/mcp-server
+npx @modelcontextprotocol/inspector node packages/mcp-server/dist/index.js
+```
+
+### Documentation
+
+- **[Setup & Testing Guide](./mcp-server-setup-and-testing.md)** — Install, build, test with MCP Inspector, connect to AI clients, troubleshooting.
+- **[Usage Guide](./mcp-server-usage-guide.md)** — Architecture, detailed tool reference with schemas and example I/O, workflow examples, FAQ.
+
+## 5. Building Web3 Frontends
+
+The `packages/dashboard` directory contains a **Next.js** application template designed to work with your Stylus contracts.
+
+### Getting Started with the Dashboard
+```bash
+cd packages/dashboard
+npm install
+npm run dev
+```
+
+### Key Libraries Included
+- **Ethers.js v6**: For interacting with the blockchain.
+- **Tailwind CSS + Shadcn UI**: For rapid, beautiful UI development.
+- **Lucide React**: For icons.
+
+### Connecting to Your Contract
+1.  Deploy your contract using `deploy.sh`.
+2.  Note the deployed contract address.
+3.  Update the helper/config in `packages/dashboard` (you may need to create a config file or update `page.tsx`) to point to your new contract address and ABI.
+
+## 6. Summary of Commands
+
+| Action | Command |
+|---|---|
+| **Setup** | `./scripts/setup.sh` |
+| **Create Project** | `./scripts/scaffold.sh <name>` |
+| **Check Code** | `./scripts/check.sh <path>` |
+| **Deploy** | `./scripts/deploy.sh <key> [url]` |
+
+---
+*Generated by Stylus Builder Skill*
