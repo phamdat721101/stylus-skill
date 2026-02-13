@@ -1,4 +1,4 @@
-import type { RustFunction, TestScenario } from "../types.js";
+import type { RustFunction, TestScenario } from "../types.ts";
 
 function fnCallArgs(fn: RustFunction): string {
   return fn.params.map((p) => defaultValueForType(p.type)).join(", ");

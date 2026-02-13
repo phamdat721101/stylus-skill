@@ -1,7 +1,5 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import type { AgentManifest, ManifestFunction } from "../types.js";
-import { parseRustContract } from "../utils/rust-parser.js";
+import type { AgentManifest, ManifestFunction } from "../types.ts";
+import { parseRustContract } from "../utils/rust-parser.ts";
 
 const RUST_TO_SOLIDITY: Record<string, string> = {
   U256: "uint256",
@@ -73,23 +71,4 @@ export function generateAgentManifest(
     version: version ?? "0.1.0",
     abi,
   };
-}
-
-export function registerAgentManifest(server: McpServer): void {
-  server.tool(
-    "generate_agent_manifest",
-    "Generate an ERC-8004 Agent Manifest JSON from a Stylus Rust contract",
-    {
-      source_code: z.string().describe("Rust source code of a Stylus contract"),
-      name: z.string().optional().describe("Override manifest name"),
-      description: z.string().optional().describe("Override manifest description"),
-      version: z.string().optional().describe("Override manifest version"),
-    },
-    async ({ source_code, name, description, version }) => {
-      const result = generateAgentManifest(source_code, name, description, version);
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
-      };
-    }
-  );
 }

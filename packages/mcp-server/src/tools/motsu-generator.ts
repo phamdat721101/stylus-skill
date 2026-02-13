@@ -1,12 +1,10 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import type { TestGeneratorResult } from "../types.js";
-import { parseRustContract } from "../utils/rust-parser.js";
+import type { TestGeneratorResult } from "../types.ts";
+import { parseRustContract } from "../utils/rust-parser.ts";
 import {
   TEST_SCENARIOS,
   generateTestHeader,
   generateTestFooter,
-} from "../knowledge/motsu-templates.js";
+} from "../knowledge/motsu-templates.ts";
 
 export function generateMotsuTests(sourceCode: string): TestGeneratorResult {
   const contract = parseRustContract(sourceCode);
@@ -30,18 +28,4 @@ export function generateMotsuTests(sourceCode: string): TestGeneratorResult {
   ].join("\n");
 
   return { header, tests, fullFile };
-}
-
-export function registerMotsuGenerator(server: McpServer): void {
-  server.tool(
-    "generate_motsu_tests",
-    "Generate Motsu framework unit tests for a Stylus Rust smart contract",
-    { source_code: z.string().describe("Rust source code of a Stylus contract") },
-    async ({ source_code }) => {
-      const result = generateMotsuTests(source_code);
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
-      };
-    }
-  );
 }

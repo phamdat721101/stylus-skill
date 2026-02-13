@@ -1,4 +1,4 @@
-import type { InkPattern } from "../types.js";
+import type { InkPattern } from "../types.ts";
 
 export const INK_PATTERNS: InkPattern[] = [
   {

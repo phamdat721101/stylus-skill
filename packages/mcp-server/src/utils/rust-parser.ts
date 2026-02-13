@@ -1,4 +1,4 @@
-import type { ContractInfo, RustFunction, StorageField } from "../types.js";
+import type { ContractInfo, RustFunction, StorageField } from "../types.ts";
 
 /**
  * Extract the contract name and storage fields from a `sol_storage! { ... }` block.

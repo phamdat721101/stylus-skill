@@ -1,7 +1,5 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import type { AuditResult } from "../types.js";
-import { INK_PATTERNS } from "../knowledge/ink-patterns.js";
+import type { AuditResult } from "../types.ts";
+import { INK_PATTERNS } from "../knowledge/ink-patterns.ts";
 
 export function analyzeInkUsage(sourceCode: string): AuditResult {
   const lines = sourceCode.split("\n");
@@ -33,18 +31,4 @@ export function analyzeInkUsage(sourceCode: string): AuditResult {
   }
 
   return { findings, summary };
-}
-
-export function registerInkAuditor(server: McpServer): void {
-  server.tool(
-    "analyze_ink_usage",
-    "Analyze a Stylus Rust contract for expensive Ink (WASM gas) patterns and suggest optimizations",
-    { source_code: z.string().describe("Rust source code of a Stylus contract") },
-    async ({ source_code }) => {
-      const result = analyzeInkUsage(source_code);
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
-      };
-    }
-  );
 }
