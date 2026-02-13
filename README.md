@@ -7,6 +7,8 @@ This repository contains:
 2.  **Web Dashboard**: A developer-friendly interface for visual interaction with Stylus tools.
 3.  **CLI Scripts**: Essential utilities for project scaffolding, building, and deploying.
 
+![Stylus Architect Dashboard Demo](assets/stylus_dashboard.gif)
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
