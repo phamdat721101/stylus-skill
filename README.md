@@ -1,118 +1,107 @@
-# Stylus Builder Skill
+# Stylus Architect
 
-This framework provides a streamlined, skill-based approach to building, testing, and deploying Arbitrum Stylus smart contracts. It is designed to be used by AI agents or developers to quickly spin up and deploy Stylus projects using Rust.
+**Stylus Architect** is a comprehensive toolkit designed to accelerate the development of Arbitrum Stylus smart contracts using AI agents and modern web interfaces. It bridges the gap between raw Rust code and deployed dApps on the Arbitrum network.
+
+This repository contains:
+1.  **MCP Server**: An AI-powered backend that exposes specialized tools to Large Language Models (LLMs) via the Model Context Protocol.
+2.  **Web Dashboard**: A developer-friendly interface for visual interaction with Stylus tools.
+3.  **CLI Scripts**: Essential utilities for project scaffolding, building, and deploying.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Usage](#usage)
-  - [1. Scaffold a New Project](#1-scaffold-a-new-project)
-  - [2. Develop & Check](#2-develop--check)
-  - [3. Deploy](#3-deploy)
+- [Quick Start](#quick-start)
+  - [1. Dashboard](#1-dashboard)
+  - [2. MCP Server (AI Agent)](#2-mcp-server-ai-agent)
+- [Core Features](#core-features)
+- [Detailed Documentation](#detailed-documentation)
 - [Scripts Reference](#scripts-reference)
 - [Project Structure](#project-structure)
 
 ## Prerequisites
 
-Before using this framework, ensure you have a Unix-like environment (macOS or Linux). The setup script will handle most dependencies, but basic system tools like `curl` and `git` should be available.
+-   **Node.js**: v18 or higher (for Dashboard and MCP Server).
+-   **Rust**: v1.75+ (for Stylus contract development).
+-   **Unix-like Environment**: macOS or Linux (for scripts).
 
-## Installation & Setup
-
-1.  **Clone or Navigate to this Directory**: Ensure you are in the root of the `stylus-skill` directory.
-2.  **Run the Setup Script**: This script checks for and installs Rust, the `wasm32-unknown-unknown` target, and the `cargo-stylus` tool.
-
-    ```bash
-    ./scripts/setup.sh
-    ```
-
-    *Expected Output:*
-    ```text
-    Checking Stylus development environment...
-    Rust is already installed.
-    Adding wasm32-unknown-unknown target...
-    cargo-stylus is already installed.
-    Stylus environment setup complete!
-    cargo-stylus 0.x.x
-    ```
-
-## Usage
-
-### 1. Scaffold a New Project
-
-To create a new Stylus project with all necessary configuration files:
+The setup script helps prepare your environment:
 
 ```bash
-./scripts/scaffold.sh <project_name>
+./scripts/setup.sh
 ```
 
-**Example:**
-```bash
-./scripts/scaffold.sh my_stylus_dapp
-```
+## Quick Start
 
-This creates a directory named `my_stylus_dapp` with:
-- `Cargo.toml`: Configured with `stylus-sdk` and other dependencies.
-- `src/lib.rs`: A basic "Counter" contract example.
-- `Stylus.toml`: Stylus-specific configuration.
-- `.cargo/config.toml`: Sets the default build target to WebAssembly.
+### 1. Dashboard
 
-### 2. Develop & Check
-
-Navigate into your project directory and start developing.
-
-**Check compiling:**
-To ensure your contract compiles and meets Stylus validity requirements, use the check script. You can run it from inside the project directory or provide the path.
+Launch the web interface to immediately start using the tools visually.
 
 ```bash
-# From inside the project directory
-../scripts/check.sh
-
-# Or from the root
-./scripts/check.sh my_stylus_dapp
+cd packages/dashboard
+npm install
+npm run dev
 ```
 
-### 3. Deploy
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To deploy your compiled contract to an Arbitrum Stylus chain (default: Sepolia Testnet).
+### 2. MCP Server (AI Agent)
 
-**Requirements:**
-- A private key with some Sepolia ETH for gas.
+To use these tools within Claude Desktop or other MCP-compatible clients, you need to configure the server.
 
+**Build the server:**
 ```bash
-# From inside the project directory
-../scripts/deploy.sh <your_private_key> [rpc_endpoint]
+cd packages/mcp-server
+npm install
+npm run build
 ```
 
-**Parameters:**
-- `private_key`: Your wallet's private key (starts with `0x` or without).
-- `rpc_endpoint`: (Optional) The RPC URL. Defaults to `https://sepolia-rollup.arbitrum.io/rpc`.
+**Add to Claude Desktop config:**
+ Add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "stylus-architect": {
+      "command": "node",
+      "args": [
+        "/ABSOLUTE/PATH/TO/stylus-skill/packages/mcp-server/dist/index.js"
+      ]
+    }
+  }
+}
+```
+
+## Core Features
+
+-   **Ink Auditor**: Scans Rust contracts for expensive patterns that consume excessive WASM gas (Ink).
+-   **Motsu Test Generator**: Automatically generates unit tests using the Motsu testing framework.
+-   **Agent Manifest (ERC-8004)**: Generates a JSON manifest to make your contract discoverable and usable by autonomous agents.
+-   **Project Scaffolding**: Quickly set up a new Stylus project with best-practice configuration.
+
+## Detailed Documentation
+
+-   [**AI Agent Skills Tutorial**](docs/agent-skills-tutorial.md): Guide on using the MCP tools with an AI assistant.
+-   [**Stylus Dashboard Tutorial**](docs/stylus-dashboard-tutorial.md): Walkthrough of the web interface features.
 
 ## Scripts Reference
 
+Legacy helper scripts for manual workflow:
+
 | Script | Description | Arguments |
 | :--- | :--- | :--- |
-| `setup.sh` | Installs system dependencies (Rust, cargo-stylus). | None |
+| `setup.sh` | Installs Rust, cargo-stylus, and wasm target. | None |
 | `scaffold.sh` | Creates a new Stylus project structure. | `<project_name>` |
-| `check.sh` | Builds and validates the contract. | `[project_path]` (default: `.`) |
-| `deploy.sh` | Deploys the contract to the chain. | `<private_key> [endpoint]` |
+| `check.sh` | Builds and validates a contract. | `[project_path]` |
+| `deploy.sh` | Deploys a contract to chain. | `<private_key> [endpoint]` |
 
 ## Project Structure
 
-A scaffolded project will have the following layout:
-
 ```text
-my_project/
-├── .cargo/
-│   └── config.toml      # Forces wasm32-unknown-unknown target
-├── src/
-│   └── lib.rs           # Contract entrypoint and logic
-├── Cargo.toml           # Rust dependencies (stylus-sdk, alloy, etc.)
-├── Stylus.toml          # Stylus program metadata
-└── [Target Directory]   # Created after build/check
+stylus-skill/
+├── packages/
+│   ├── mcp-server/    # AI Agent tools implementation
+│   └── dashboard/     # Web UI for developers
+├── scripts/           # Shell scripts for build/deploy
+├── docs/              # Detailed tutorials
+└── README.md          # This file
 ```
-
-## Troubleshooting
-
--   **Deployment Failures**: Ensure your account has enough ETH on the specific Arbitrum chain you are deploying to.
--   **Build Errors**: Make sure you rely on `cargo-stylus` compatible dependencies. Standard Rust `std` libraries that rely on OS features (like I/O, threads) are not supported in the WASM environment.
